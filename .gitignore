@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local configuration and generated files
+.env
+.env.*
+!.env.example
+tempCodeRunnerFile.py
+
+# Corpus data and generated search indexes
+data/

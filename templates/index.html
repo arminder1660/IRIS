@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRIS — News Retrieval Engine</title>
+    <meta name="description" content="BM25-ranked search over a large news corpus.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo" aria-hidden="true">IR</div>
+                <div>
+                    <div class="brand-name">IRIS</div>
+                    <div class="brand-sub">Information Retrieval Index</div>
+                </div>
+            </div>
+
+            <section class="panel">
+                <h2>Corpus</h2>
+                <dl class="stats-grid">
+                    <div>
+                        <dt>Documents</dt>
+                        <dd id="statDocs">—</dd>
+                    </div>
+                    <div>
+                        <dt>Vocabulary</dt>
+                        <dd id="statVocab">—</dd>
+                    </div>
+                    <div>
+                        <dt>Ranker</dt>
+                        <dd id="statRanker">BM25</dd>
+                    </div>
+                    <div>
+                        <dt>Index build</dt>
+                        <dd id="statBuild">—</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section class="panel">
+                <h2>Filters</h2>
+                <label class="field">
+                    <span>Publication</span>
+                    <select id="filterPublication">
+                        <option value="all">All publications</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>Year</span>
+                    <select id="filterYear">
+                        <option value="all">All years</option>
+                    </select>
+                </label>
+                <button type="button" class="ghost-btn" id="clearFilters">Reset filters</button>
+            </section>
+
+            <section class="panel">
+                <h2>Try a query</h2>
+                <div class="chip-row" id="featuredQueries">
+                    <button type="button" class="chip" data-q="health care">health care</button>
+                    <button type="button" class="chip" data-q="south bronx police">south bronx police</button>
+                    <button type="button" class="chip" data-q="tyrus wong bambi">tyrus wong bambi</button>
+                    <button type="button" class="chip" data-q="david bowie prince">david bowie prince</button>
+                    <button type="button" class="chip" data-q="supreme court">supreme court</button>
+                </div>
+            </section>
+
+            <p class="credit">Built by <strong>Arminder Singh</strong></p>
+        </aside>
+
+        <main class="main">
+            <header class="hero">
+                <p class="kicker">Lexical search · Okapi BM25 · query-biased snippets</p>
+                <h1>Find the article, not the haystack.</h1>
+                <p class="lede">Ranked retrieval over a news archive. Documents stay in memory; only the top hits and a focused snippet come back over the wire.</p>
+
+                <form class="search-box" id="searchForm" autocomplete="off">
+                    <label class="sr-only" for="searchQuery">Search query</label>
+                    <span class="search-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                            <path d="M20 20L16.5 16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                    <input id="searchQuery" type="search" placeholder="Search titles, authors, and article text…" spellcheck="false">
+                    <kbd>/</kbd>
+                    <button type="submit" class="search-btn">Search</button>
+                    <div id="suggestList" class="suggest" hidden></div>
+                </form>
+            </header>
+
+            <section class="results-wrap" id="resultsWrap" hidden>
+                <div class="results-bar">
+                    <div id="statsLine" class="stats-line"></div>
+                    <div class="pager">
+                        <button type="button" class="ghost-btn" id="prevPage" disabled>Previous</button>
+                        <span id="pageLabel">Page 1</span>
+                        <button type="button" class="ghost-btn" id="nextPage" disabled>Next</button>
+                    </div>
+                </div>
+                <div id="statusBox"></div>
+                <ol id="resultsList" class="results"></ol>
+            </section>
+
+            <section class="empty" id="emptyState">
+                <div class="empty-card">
+                    <h2>Ready when you are</h2>
+                    <p>Type a query or pick a sample. Ranking uses BM25 with title boosting, then opens the full article on demand.</p>
+                    <ul>
+                        <li>Press <kbd>Enter</kbd> to search</li>
+                        <li>Press <kbd>/</kbd> to focus the box</li>
+                        <li>Esc closes the reader</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+    <article class="drawer" id="reader" hidden>
+        <header class="drawer-head">
+            <div>
+                <p class="drawer-meta" id="readerMeta"></p>
+                <h2 id="readerTitle">Article</h2>
+            </div>
+            <button type="button" class="icon-btn" id="closeReader" aria-label="Close article">×</button>
+        </header>
+        <div class="drawer-body" id="readerBody"></div>
+    </article>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
